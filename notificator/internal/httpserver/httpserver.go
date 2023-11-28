@@ -2,9 +2,11 @@ package httpserver
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/fishkaoff/alians/notificator/notificator/internal/domain/models"
+	"github.com/fishkaoff/alians/notificator/notificator/internal/lib/errs"
 	"github.com/fishkaoff/alians/notificator/notificator/internal/lib/validate"
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,7 +29,7 @@ func New(ListenAddr string, log *slog.Logger, msgThrower MessageThrower) *HttpSe
 }
 
 type MessageThrower interface {
-	ThrowMessage(ctx context.Context, message models.Message)
+	ThrowMessage(ctx context.Context, message *models.Message) error
 }
 
 func (hs *HttpServer) MustStart() {
@@ -51,23 +53,28 @@ func (hs *HttpServer) newMessageHandler(c *fiber.Ctx) error {
 	var msg models.Message
 	if err := c.BodyParser(&msg); err != nil {
 		hs.log.Error(err.Error())
-		return c.Status(400).JSON(fiber.Map{
-			"response": "bad request",
+		return c.Status(500).JSON(fiber.Map{
+			"response": errs.InternalError,
 		})
 	}
 
-	hs.log.Debug("handled new message: ", &msg)
+	hs.log.Debug("handled new message: ", slog.String("message", fmt.Sprint(msg)))
 
-	if err := validate.ValidateMessage(msg); err != nil {
-		hs.log.Debug("message not valid: ", err)
+	if err := validate.ValidateMessage(&msg); err != nil {
+		hs.log.Debug("message not valid: ", slog.String("error", err.Error()))
 		return c.Status(400).JSON(fiber.Map{
-			"response": err,
+			"response": err.Error(),
 		})
 	}
 
 	hs.log.Debug("valid message")
 
-	go hs.msgThrower.ThrowMessage(context.TODO(), msg)
+	err := hs.msgThrower.ThrowMessage(context.TODO(), &msg)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"response": err.Error(),
+		})
+	}
 
 	return c.Status(200).JSON(fiber.Map{
 		"response": "success",

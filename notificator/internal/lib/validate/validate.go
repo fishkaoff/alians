@@ -1,23 +1,21 @@
 package validate
 
 import (
-	"errors"
-
 	"github.com/fishkaoff/alians/notificator/notificator/internal/domain/models"
+	"github.com/fishkaoff/alians/notificator/notificator/internal/lib/errs"
 )
 
-func ValidateMessage(msg models.Message) error {
+func ValidateMessage(msg *models.Message) error {
 	if msg.Name == "" {
-		return errors.New("name cannot be empty")
+		return errs.EmptyName
 	}
 
 	if msg.Phone == "" {
-		return errors.New("phone cannot be empty")
-
+		return errs.EmptyPhone
 	}
 
 	if msg.Email == "" {
-		return errors.New("email cannot be empty")
+		return errs.EmptyEmail
 	}
 
 	return nil

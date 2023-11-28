@@ -1,7 +1,0 @@
-env: "local"
-http: 
-  listen_addr: ":5001"
-notificator: 
-  bot_token: "6917799849:AAHWJS-fFu4saFUuSnSLmxpmZ_64r9FJaxA"
-  chat_id: "925823120"
-  

@@ -1,0 +1,7 @@
+env: "prod"
+http: 
+  listen_addr: ":5001"
+notificator: 
+  bot_token: ""
+  chat_id: ""
+  
