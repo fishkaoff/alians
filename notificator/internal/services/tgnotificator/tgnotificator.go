@@ -1,4 +1,4 @@
-package notificator
+package tgnotificator
 
 import (
 	"bytes"
@@ -15,22 +15,22 @@ import (
 
 var tgurl = "https://api.telegram.org/%s/sendMessage"
 
-type Notificator struct {
+type TgNotificator struct {
 	BotToken string
 	ChatID   string
 
 	log *slog.Logger
 }
 
-func New(cfg *config.Config, log *slog.Logger) *Notificator {
-	return &Notificator{
-		BotToken: cfg.NotificatorConfig.BotToken,
-		ChatID:   cfg.NotificatorConfig.ChatID,
+func New(cfg *config.Config, log *slog.Logger) *TgNotificator {
+	return &TgNotificator{
+		BotToken: cfg.TgNotificatorConfig.BotToken,
+		ChatID:   cfg.TgNotificatorConfig.ChatID,
 		log:      log,
 	}
 }
 
-func (n *Notificator) ThrowMessage(ctx context.Context, msg *models.Message) error {
+func (n *TgNotificator) ThrowMessage(ctx context.Context, msg *models.Message) error {
 
 	body, err := n.prepareRequestBody(msg)
 	if err != nil {
@@ -57,11 +57,11 @@ func (n *Notificator) ThrowMessage(ctx context.Context, msg *models.Message) err
 	return nil
 }
 
-func (n *Notificator) renderMessage(msg *models.Message) string {
+func (n *TgNotificator) renderMessage(msg *models.Message) string {
 	return fmt.Sprintf("*-Новая заявка*\n\n*-Имя: *%s\n*-Email: *%s\n*-Телефон: *%s\n*-Сообщение: *%s", msg.Name, msg.Email, msg.Phone, msg.Text)
 }
 
-func (n *Notificator) prepareRequestBody(msg *models.Message) ([]byte, error) {
+func (n *TgNotificator) prepareRequestBody(msg *models.Message) ([]byte, error) {
 	text := n.renderMessage(msg)
 	reqBody := models.RequestBody{
 		ChatID:    n.ChatID,

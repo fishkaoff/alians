@@ -10,14 +10,14 @@ import (
 type Config struct {
 	Env               string      `yaml:"env"`
 	HttpConfig        Http        `yaml:"http"`
-	NotificatorConfig Notificator `yaml:"notificator"`
+	TgNotificatorConfig TGNotificator `yaml:"tg_notificator"`
 }
 
 type Http struct {
 	ListenAddr string `yaml:"listen_addr"`
 }
 
-type Notificator struct {
+type TGNotificator struct {
 	BotToken string `yaml:"bot_token"`
 	ChatID   string `yaml:"chat_id"`
 }

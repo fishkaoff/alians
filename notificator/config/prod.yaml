@@ -1,7 +1,7 @@
 env: "prod"
 http: 
   listen_addr: ":5001"
-notificator: 
+tg_notificator: 
   bot_token: ""
   chat_id: ""
   
