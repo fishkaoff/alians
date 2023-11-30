@@ -1,6 +1,7 @@
 package models
 
 type Message struct {
+	From  string `json:"from"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Phone string `json:"phone"`

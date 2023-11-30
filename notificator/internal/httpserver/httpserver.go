@@ -54,7 +54,7 @@ func (hs *HttpServer) newMessageHandler(c *fiber.Ctx) error {
 	if err := c.BodyParser(&msg); err != nil {
 		hs.log.Error(err.Error())
 		return c.Status(500).JSON(fiber.Map{
-			"response": errs.InternalError,
+			"response": errs.ErrInternalError,
 		})
 	}
 

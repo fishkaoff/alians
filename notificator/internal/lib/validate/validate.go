@@ -6,16 +6,20 @@ import (
 )
 
 func ValidateMessage(msg *models.Message) error {
+	if msg.From == "" {
+		return errs.ErrEmptyFrom
+	}
+
 	if msg.Name == "" {
-		return errs.EmptyName
+		return errs.ErrEmptyName
 	}
 
 	if msg.Phone == "" {
-		return errs.EmptyPhone
+		return errs.ErrEmptyPhone
 	}
 
 	if msg.Email == "" {
-		return errs.EmptyEmail
+		return errs.ErrEmptyEmail
 	}
 
 	return nil

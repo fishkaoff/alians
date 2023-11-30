@@ -35,7 +35,7 @@ func (n *TgNotificator) ThrowMessage(ctx context.Context, msg *models.Message) e
 	body, err := n.prepareRequestBody(msg)
 	if err != nil {
 		n.log.Error("cannot prepare request body", slog.String("error", err.Error()))
-		return errs.InternalError
+		return errs.ErrInternalError
 	}
 
 	url := fmt.Sprintf(tgurl, n.BotToken)
@@ -43,7 +43,7 @@ func (n *TgNotificator) ThrowMessage(ctx context.Context, msg *models.Message) e
 	defer resp.Body.Close()
 	if err != nil {
 		n.log.Error("error while request to telegram: ", slog.String("error", err.Error()), slog.String("op", "notificator.ThrowMessage"))
-		return errs.InternalError
+		return errs.ErrInternalError
 	}
 
 	// var responseBody interface{}
@@ -58,7 +58,7 @@ func (n *TgNotificator) ThrowMessage(ctx context.Context, msg *models.Message) e
 }
 
 func (n *TgNotificator) renderMessage(msg *models.Message) string {
-	return fmt.Sprintf("*-Новая заявка*\n\n*-Имя: *%s\n*-Email: *%s\n*-Телефон: *%s\n*-Сообщение: *%s", msg.Name, msg.Email, msg.Phone, msg.Text)
+	return fmt.Sprintf("*-Новая заявка:*%s\n\n*-Имя: *%s\n*-Email: *%s\n*-Телефон: *%s\n*-Сообщение: *%s", msg.From, msg.Name, msg.Email, msg.Phone, msg.Text)
 }
 
 func (n *TgNotificator) prepareRequestBody(msg *models.Message) ([]byte, error) {
