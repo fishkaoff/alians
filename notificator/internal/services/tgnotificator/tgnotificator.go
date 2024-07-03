@@ -13,7 +13,7 @@ import (
 	"github.com/fishkaoff/alians/notificator/notificator/internal/lib/errs"
 )
 
-var tgurl = "https://api.telegram.org/%s/sendMessage"
+var tgurl = "https://api.telegram.org/bot%s/sendMessage"
 
 type TgNotificator struct {
 	BotToken string
@@ -39,26 +39,19 @@ func (n *TgNotificator) ThrowMessage(ctx context.Context, msg *models.Message) e
 	}
 
 	url := fmt.Sprintf(tgurl, n.BotToken)
+
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
-	defer resp.Body.Close()
 	if err != nil {
 		n.log.Error("error while request to telegram: ", slog.String("error", err.Error()), slog.String("op", "notificator.ThrowMessage"))
 		return errs.ErrInternalError
 	}
+	defer resp.Body.Close()
 
-	// var responseBody interface{}
-	// err = json.NewDecoder(resp.Body).Decode(&responseBody)
-	// if err != nil {
-	// 	n.log.Error("error while parding response", slog.String("error", err.Error()))
-	// 	return errs.InternalError
-	// }
-
-	// n.log.Debug("response from telegram:", slog.String("body", fmt.Sprint(responseBody)))
 	return nil
 }
 
 func (n *TgNotificator) renderMessage(msg *models.Message) string {
-	return fmt.Sprintf("*-Новая заявка:*%s\n\n*-Имя: *%s\n*-Email: *%s\n*-Телефон: *%s\n*-Сообщение: *%s", msg.From, msg.Name, msg.Email, msg.Phone, msg.Text)
+	return fmt.Sprintf("*-Новая заявка:*\n\n*-Система: *%s\n*-Телефон: *%s\n*-Площадь: *%s", msg.System, msg.Phone, msg.Square)
 }
 
 func (n *TgNotificator) prepareRequestBody(msg *models.Message) ([]byte, error) {

@@ -9,6 +9,7 @@ import (
 	"github.com/fishkaoff/alians/notificator/notificator/internal/lib/errs"
 	"github.com/fishkaoff/alians/notificator/notificator/internal/lib/validate"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 type HttpServer struct {
@@ -34,6 +35,7 @@ type MessageThrower interface {
 
 func (hs *HttpServer) MustStart() {
 	hs.app = fiber.New()
+	hs.app.Use(cors.New())
 	hs.setupEndpoints()
 
 	hs.log.Info("server is running on: ", slog.String("addr", hs.ListenAddr))
@@ -46,11 +48,13 @@ func (hs *HttpServer) MustStart() {
 func (hs *HttpServer) setupEndpoints() {
 	message := hs.app.Group("/message")
 
-	message.Get("/new", hs.newMessageHandler)
+	// http://url/message/new
+	message.Post("/new", hs.newMessageHandler)
 }
 
 func (hs *HttpServer) newMessageHandler(c *fiber.Ctx) error {
 	var msg models.Message
+	
 	if err := c.BodyParser(&msg); err != nil {
 		hs.log.Error(err.Error())
 		return c.Status(500).JSON(fiber.Map{
