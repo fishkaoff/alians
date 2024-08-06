@@ -50,6 +50,11 @@ func (hs *HttpServer) setupEndpoints() {
 
 	// http://url/message/new
 	message.Post("/new", hs.newMessageHandler)
+	hs.app.Get("/ping", func (c *fiber.Ctx) error {
+		return c.Status(200).JSON(fiber.Map{
+			"response": "pong",
+		})
+	})
 }
 
 func (hs *HttpServer) newMessageHandler(c *fiber.Ctx) error {
